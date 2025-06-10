@@ -48,12 +48,6 @@ export async function createAgent(req, res) {
             return res.status(400).json(responseWithoutData(400, error))
         }
 
-        // Prepare base agent data
-        const insertData = {
-            name: data.name,
-            instructions: data.instructions
-        }
-
         // Initialize OpenAI service for API operations
         const openAIService = new OpenAIService()
 
@@ -75,7 +69,7 @@ export async function createAgent(req, res) {
         // tool_resources: this is the vector store id that the assistant will use to search for documents
         // file_search: this is the vector store id that the assistant will use to search for documents
         // response_format: default is text, can be json_object, json_schema, or text
-        // temperature: default is 1, can be 0.0 to 1.0. 0.0 is the most deterministic, 1.0 is the most random.
+        // temperature: default is 0.7, can be 0.0 to 1.0. 0.0 is the most deterministic, 1.0 is the most random.
         const assistantDataOpenAI = {
             name: assistantName,
             instructions: sanitizedInstructions,
@@ -201,7 +195,7 @@ export async function updateAgentById(req, res) {
         // Process name update if changed
         if (data.name !== agent.name) {
             updateName = sanitize(data.name.replace(/ /g, '-')).toLowerCase()
-            if (!updateName.includes('[TEST]')) {
+            if (!updateName.includes('[test]')) {
                 updateName = `[TEST] ${updateName}`
             }
         }

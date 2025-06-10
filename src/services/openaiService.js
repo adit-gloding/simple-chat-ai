@@ -10,6 +10,7 @@ import fs from 'fs'
 import axiosClient from './axiosClient.js'
 
 import { OPENAI_KEY, OPENAI_URL } from '../configs/constants.js'
+import { logError } from './logError.js'
 
 dotenv.config()
 
@@ -41,22 +42,10 @@ class OpenAIService {
      * @param {Error} error - The error object
      */
     async logError(source, url, error) {
-        const now = new Date();
 
         const errorMessage = error.response ? error.response.data : error.message;
 
-        // insert error to .txt /errors with format YYYY-MM-DD.txt
-        // create folder if not exists
-        const errorFolder = './errors';
-        if (!fs.existsSync(errorFolder)) {
-            fs.mkdirSync(errorFolder);
-        }
-        // create file if not exists
-        const errorFile = `${errorFolder}/${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}.txt`;
-
-        fs.appendFileSync(errorFile, `${now.toISOString()} - ${source} - ${url} - ${errorMessage}\n`);
-        
-        console.log(`Error logged to ${errorFile}`);
+        logError(errorMessage, source, url)
         
         throw error;
     }
